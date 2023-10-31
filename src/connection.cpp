@@ -37,6 +37,8 @@ mb::Connection::~Connection()
 
 void mb::Connection::request() noexcept 
 try {
+    request_ = std::string(config.max_request_length, '\0');
+    
     socket_.async_read_some(
         boost::asio::buffer(request_, config.max_request_length),
         boost::bind(&Connection::handle_request, shared_from_this(),
@@ -48,13 +50,11 @@ try {
 
 void mb::Connection::response() noexcept
 try {
-    response_ = "Hello kitty! ";
-    for(char c: request_)
-        if(c != '\0' || c != '\n')
-            response_ += c;
-        else
-            break;
-    response_ += "!\n";
+    response_.clear();
+    size_t it = request_.find('\0');
+    if (it != std::string::npos) {
+        response_ += request_.substr(0, it);
+    }
 
     boost::asio::async_write(
         socket_, boost::asio::buffer(response_),
