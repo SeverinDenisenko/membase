@@ -1,6 +1,7 @@
 #pragma once
 
 #include "config.hpp"
+#include "db.hpp"
 #include "handler.hpp"
 
 namespace mb {
@@ -14,6 +15,7 @@ public:
 
 private:
     Config config;
+    DB db;
     Handler handler;
 };
 }

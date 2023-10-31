@@ -15,6 +15,8 @@
 DEFINE_string(config, "config.json", "Main config");
 
 mb::App::App(int argc, char* argv[]) noexcept
+    : db()
+    , handler(db)
 {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
     google::InstallFailureSignalHandler();

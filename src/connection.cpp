@@ -64,6 +64,10 @@ try {
 
 void mb::Connection::handle_request(const boost::system::error_code& error, size_t /* size */) noexcept
 {
+    if (error == boost::asio::error::eof) {
+        return;
+    }
+
     if (error) {
         LOG(ERROR) << fmt::format("Error handling request: {}", error.message());
     } else {
