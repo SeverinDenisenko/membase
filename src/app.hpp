@@ -1,6 +1,7 @@
 #pragma once
 
 #include "config.hpp"
+#include "handler.hpp"
 
 namespace mb {
 class App {
@@ -13,5 +14,6 @@ public:
 
 private:
     Config config;
+    Handler handler;
 };
 }

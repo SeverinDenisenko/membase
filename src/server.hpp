@@ -1,12 +1,13 @@
 #pragma once
 
-#include "connection.hpp"
 #include "config.hpp"
+#include "connection.hpp"
+#include "handler.hpp"
 
 namespace mb {
 class Server {
 public:
-    Server(boost::asio::io_context& io_context, const Config& config);
+    Server(boost::asio::io_context& io_context, const Config& config, Handler& handler);
     ~Server();
 
 private:
@@ -15,6 +16,7 @@ private:
         const boost::system::error_code& error);
 
     const Config& config;
+    Handler& handler;
     boost::asio::io_context& io_context_;
     boost::asio::ip::tcp::acceptor acceptor_;
 };

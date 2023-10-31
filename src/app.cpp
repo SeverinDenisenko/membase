@@ -9,8 +9,8 @@
 #include <glog/logging.h>
 #include <nlohmann/json.hpp>
 
-#include "server.hpp"
 #include "config.hpp"
+#include "server.hpp"
 
 DEFINE_string(config, "config.json", "Main config");
 
@@ -30,7 +30,6 @@ mb::App::App(int argc, char* argv[]) noexcept
         config.port = json["port"];
         config.max_request_length = json["max_request_length"];
         config.memory = json["memory"];
-
     } catch (const std::exception& e) {
         LOG(FATAL) << fmt::format("Can't load config! Reason: {}", e.what());
     }
@@ -46,7 +45,7 @@ mb::App::~App()
 void mb::App::Run() noexcept
 try {
     boost::asio::io_context io_context;
-    Server server(io_context, config);
+    Server server(io_context, config, handler);
     io_context.run();
 
     boost::thread(boost::bind(&boost::asio::io_service::run, &io_context)).detach();

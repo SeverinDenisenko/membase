@@ -3,8 +3,9 @@
 
 #include "server.hpp"
 
-mb::Server::Server(boost::asio::io_context& io_context, const Config& config)
+mb::Server::Server(boost::asio::io_context& io_context, const Config& config, Handler& handler)
     : config(config)
+    , handler(handler)
     , io_context_(io_context)
     , acceptor_(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(config.host), config.port))
 {
@@ -19,7 +20,7 @@ mb::Server::~Server()
 
 void mb::Server::start_accept()
 {
-    boost::shared_ptr<Connection> new_connection = Connection::create(io_context_, config);
+    boost::shared_ptr<Connection> new_connection = Connection::create(io_context_, config, handler);
 
     acceptor_.async_accept(new_connection->socket(),
         boost::bind(&Server::handle_accept, this, new_connection,
@@ -37,4 +38,3 @@ void mb::Server::handle_accept(boost::shared_ptr<Connection> new_connection,
 
     start_accept();
 }
-
