@@ -12,15 +12,18 @@ add_subdirectory(deps/glog)
 add_subdirectory(deps/json)
 add_subdirectory(deps/fmt)
 add_subdirectory(deps/boost)
+add_subdirectory(deps/leveldb)
 
 file(GLOB SRC src/*)
 add_executable(membase ${SRC})
-target_compile_options(membase PUBLIC "-Wall" "-Wextra" "-Werror")
+target_compile_options(membase PUBLIC "-Wall" "-Wextra" "-Werror" "-fsanitize=address")
+target_link_options(membase PUBLIC "-fsanitize=address")
 target_link_libraries(membase
     gflags
     glog
     nlohmann_json
     fmt
+    leveldb
     Boost::asio
     Boost::system
     Boost::thread)

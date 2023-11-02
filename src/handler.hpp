@@ -13,5 +13,7 @@ public:
 
 private:
     DB& db;
+
+    std::string truncate(const std::string& requst) noexcept;
 };
 }

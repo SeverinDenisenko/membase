@@ -13,15 +13,13 @@ std::string mb::Handler::operator()(const std::string& request) noexcept
 {
     std::string res;
 
-    size_t it = request.find('\0');
-    if (it == std::string::npos) {
-        goto error;
-    }
-
     {
-        boost::tokenizer<> tokenizer(request.substr(0, it));
-        boost::tokenizer<>::iterator begin = tokenizer.begin();
-        boost::tokenizer<>::iterator end = tokenizer.end();
+        std::string truncated = truncate(request);
+        using tokenizer_t = boost::tokenizer<boost::char_separator<char>>;
+        boost::char_separator<char> sep(" ");
+        tokenizer_t tokenizer(truncated, sep);
+        tokenizer_t::iterator begin = tokenizer.begin();
+        tokenizer_t::iterator end = tokenizer.end();
 
         if (begin == end)
             goto error;
@@ -49,5 +47,23 @@ std::string mb::Handler::operator()(const std::string& request) noexcept
     return res;
 error:
     res = "ERROR\n";
+    return res;
+}
+
+std::string mb::Handler::truncate(const std::string& request) noexcept
+{
+    std::string res;
+
+    auto it = std::find_if(request.begin(), request.end(), [](const char c) {
+        return std::iscntrl(c);
+    });
+
+    if (it == request.end()) {
+        return res;
+    }
+
+    size_t len = std::distance(request.begin(), it);
+    res = request.substr(0, len);
+
     return res;
 }
