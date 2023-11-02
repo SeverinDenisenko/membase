@@ -15,26 +15,14 @@
 DEFINE_string(config, "config.json", "Main config");
 
 mb::App::App(int argc, char* argv[]) noexcept
-    : db()
+    : config(FLAGS_config)
+    , db()
     , handler(db)
 {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
     google::InstallFailureSignalHandler();
     google::InitGoogleLogging(argv[0]);
     google::LogToStderr();
-
-    try {
-        nlohmann::json json;
-        std::fstream file(FLAGS_config);
-        file >> json;
-
-        config.host = json["host"];
-        config.port = json["port"];
-        config.max_request_length = json["max_request_length"];
-        config.memory = json["memory"];
-    } catch (const std::exception& e) {
-        LOG(FATAL) << fmt::format("Can't load config! Reason: {}", e.what());
-    }
 
     LOG(INFO) << "Starting Membase...";
 }

@@ -3,7 +3,10 @@
 #include <string>
 
 namespace mb {
-struct Config {
+class Config {
+public:
+    Config(const std::string& file) noexcept;
+
     std::string host;
     int port;
     size_t memory;
