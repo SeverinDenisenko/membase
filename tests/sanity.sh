@@ -1,43 +1,9 @@
 #!/bin/bash
 set -eo pipefail
 
-executable=$1
-config=$2
+source $(dirname "$0")/framework.sh
 
-nohup "$executable" -config "$config" >/dev/null &
-sleep 3
-
-fatal () {
-    echo "Some tests failed"
-    kill -s SIGKILL $(pgrep membase)
-    exit 1
-}
-
-good () {
-    echo "All tests passed"
-    kill -s SIGKILL $(pgrep membase)
-    exit 0
-}
-
-send () {
-    echo "Running $1"
-    retval=$(echo "$1" | nc 127.0.0.1 2222)
-}
-
-check () {
-    if [ "$1" = "$2" ]
-    then
-        echo "Success: $1 == $2"
-    else
-        echo "Failed: $1 != $2"
-        fatal
-    fi
-}
-
-test () {
-    send "$1"
-    check "$retval" "$2"
-}
+run "$1" "$2"
 
 test 'PUT' 'ERROR'
 test 'GET' 'ERROR'
