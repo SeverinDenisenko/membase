@@ -29,15 +29,15 @@ std::string mb::Handler::operator()(const std::string& request) noexcept
         std::optional<std::string> value = (begin != end) ? std::make_optional(*begin++) : std::nullopt;
 
         if (command == "GET" && key && !value && tokens == 2) {
-            std::optional<std::string> ans = db.get(*key);
+            std::optional<std::string> ans = db.get(std::move(*key));
             if (!ans)
                 goto error;
             res = fmt::format("VALUE {}\n", *ans);
         } else if (command == "PUT" && key && value && tokens == 3) {
-            db.put(*key, *value);
+            db.put(std::move(*key), std::move(*value));
             res = fmt::format("OK\n");
         } else if (command == "REMOVE" && key && !value && tokens == 2) {
-            db.remove(*key);
+            db.remove(std::move(*key));
             res = fmt::format("OK\n");
         } else {
             goto error;

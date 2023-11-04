@@ -10,6 +10,9 @@ mb::Config::Config(const std::string& file) noexcept{
     try {
         nlohmann::json json;
         std::fstream stream(file);
+        if (!stream) {
+            LOG(FATAL) << fmt::format("Can't open file {}", file);
+        }
         stream >> json;
 
         host = json["host"];

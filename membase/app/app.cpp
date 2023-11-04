@@ -1,7 +1,5 @@
 #include "app.hpp"
 
-#include <fstream>
-
 #include <boost/chrono/chrono.hpp>
 #include <boost/thread/thread.hpp>
 #include <fmt/format.h>
@@ -10,19 +8,21 @@
 #include <nlohmann/json.hpp>
 
 #include "config.hpp"
+#include "memory_db.hpp"
 #include "server.hpp"
 
 DEFINE_string(config, "config.json", "Main config");
 
 mb::App::App(int argc, char* argv[]) noexcept
-    : config(FLAGS_config)
-    , db()
-    , handler(db)
+    : db(std::make_unique<MemoryDB>())
+    , handler(*db)
 {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
     google::InstallFailureSignalHandler();
     google::InitGoogleLogging(argv[0]);
     google::LogToStderr();
+
+    config = Config(FLAGS_config);
 
     LOG(INFO) << "Starting Membase...";
 }

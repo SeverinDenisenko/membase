@@ -1,0 +1,12 @@
+set(GFLAGS_BUILD_TESTING False)
+option(WITH_GTEST "" OFF)
+option(WITH_GMOCK "" OFF)
+add_subdirectory(gflags)
+add_subdirectory(glog)
+add_subdirectory(json)
+add_subdirectory(fmt)
+add_subdirectory(boost)
+option(LEVELDB_BUILD_TESTS "" OFF)
+option(LEVELDB_BUILD_BENCHMARKS "" OFF)
+add_subdirectory(leveldb)
+

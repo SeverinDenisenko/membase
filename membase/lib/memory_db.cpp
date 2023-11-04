@@ -1,10 +1,10 @@
-#include "db.hpp"
+#include "memory_db.hpp"
 
-mb::DB::DB()
+mb::MemoryDB::MemoryDB()
 {
 }
 
-std::optional<std::string> mb::DB::get(const std::string& key) noexcept
+std::optional<mb::ValueType> mb::MemoryDB::get(const KeyType&& key) noexcept
 {
     auto find = map.find(key);
 
@@ -15,12 +15,12 @@ std::optional<std::string> mb::DB::get(const std::string& key) noexcept
     }
 }
 
-void mb::DB::put(const std::string& key, const std::string& value) noexcept
+void mb::MemoryDB::put(const KeyType&& key, const ValueType&& value) noexcept
 {
     map[key] = value;
 }
 
-void mb::DB::remove(const std::string& key) noexcept
+void mb::MemoryDB::remove(const KeyType&& key) noexcept
 {
     auto find = map.find(key);
 

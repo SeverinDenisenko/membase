@@ -1,7 +1,7 @@
 #pragma once
 
 #include "config.hpp"
-#include "db.hpp"
+#include "memory_db.hpp"
 #include "handler.hpp"
 
 namespace mb {
@@ -15,7 +15,7 @@ public:
 
 private:
     Config config;
-    DB db;
+    std::unique_ptr<DB> db;
     Handler handler;
 };
 }

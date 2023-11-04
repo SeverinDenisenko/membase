@@ -3,18 +3,17 @@
 #include <optional>
 #include <string>
 
-#include <boost/unordered/unordered_flat_map.hpp>
-
 namespace mb {
+using KeyType = std::string;
+using ValueType = std::string;
+
 class DB {
 public:
-    DB();
+    virtual std::optional<ValueType> get(const KeyType&& key) noexcept = 0;
+    virtual void put(const KeyType&& key, const ValueType&& value) noexcept = 0;
+    virtual void remove(const KeyType&& key) noexcept = 0;
 
-    std::optional<std::string> get(const std::string& key) noexcept;
-    void put(const std::string& key, const std::string& value) noexcept;
-    void remove(const std::string& key) noexcept;
-
-private:
-    boost::unordered_flat_map<std::string, std::string> map;
+    virtual ~DB() = default;
 };
 }
+

@@ -6,6 +6,7 @@ namespace mb {
 class Config {
 public:
     Config(const std::string& file) noexcept;
+    Config() = default;
 
     std::string host;
     int port;
