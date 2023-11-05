@@ -1,5 +1,10 @@
-set(MEMBASE_COMPILE_OPTIONS "-Wall" "-Wextra" "-Werror" "-fsanitize=address")
-set(MEMBASE_LINK_OPTIONS "-fsanitize=address")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(MEMBASE_COMPILE_OPTIONS "-Wall" "-Wextra" "-Werror" "-fsanitize=address")
+    set(MEMBASE_LINK_OPTIONS "-fsanitize=address")
+else()
+    set(MEMBASE_COMPILE_OPTIONS "-Wall" "-Wextra" "-Werror")
+    set(MEMBASE_LINK_OPTIONS)
+endif()
 
 file(GLOB LIB_SRC lib/*)
 add_library(membase-lib STATIC ${LIB_SRC})
