@@ -1,10 +1,10 @@
 #pragma once
 
-#include "db.hpp"
 #include "config.hpp"
+#include "db.hpp"
 
-#include <shared_mutex>
 #include <boost/unordered/unordered_flat_map.hpp>
+#include <shared_mutex>
 
 namespace mb {
 

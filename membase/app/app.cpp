@@ -8,8 +8,8 @@
 #include <nlohmann/json.hpp>
 
 #include "config.hpp"
-#include "server.hpp"
 #include "db_factory.hpp"
+#include "server.hpp"
 
 DEFINE_string(config, "config.json", "Main config");
 
@@ -21,8 +21,8 @@ mb::App::App(int argc, char* argv[]) noexcept
     google::LogToStderr();
 
     config = Config(FLAGS_config);
-    
-    DBFactory factory{config};
+
+    DBFactory factory { config };
     db = factory.create();
     handler = std::make_unique<Handler>(*db);
 

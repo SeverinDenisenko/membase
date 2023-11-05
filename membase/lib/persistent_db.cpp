@@ -1,8 +1,8 @@
 #include "persistent_db.hpp"
 #include "db.hpp"
 
-#include <glog/logging.h>
 #include <fmt/format.h>
+#include <glog/logging.h>
 #include <leveldb/write_batch.h>
 
 mb::PersistentDB::PersistentDB(Config& config)
@@ -17,7 +17,8 @@ mb::PersistentDB::PersistentDB(Config& config)
     }
 }
 
-mb::PersistentDB::~PersistentDB() {
+mb::PersistentDB::~PersistentDB()
+{
     delete db;
 }
 
@@ -51,7 +52,8 @@ void mb::PersistentDB::remove(const KeyType&& key) noexcept
     leveldb::Status s = db->Delete(write_options, key);
 }
 
-void mb::PersistentDB::wipe() noexcept {
+void mb::PersistentDB::wipe() noexcept
+{
     std::lock_guard<std::shared_mutex> lock(mutex);
 
     leveldb::WriteBatch batch;
@@ -65,14 +67,15 @@ void mb::PersistentDB::wipe() noexcept {
     leveldb::Status s = db->Write(write_options, &batch);
 }
 
-std::unordered_set<mb::KeyType> mb::PersistentDB::findKey(const KeyType&& key) noexcept {
+std::unordered_set<mb::KeyType> mb::PersistentDB::findKey(const KeyType&& key) noexcept
+{
     std::shared_lock<std::shared_mutex> lock(mutex);
     std::unordered_set<mb::KeyType> result;
 
     leveldb::Iterator* it = db->NewIterator(read_options);
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
         size_t len = std::min(key.length(), it->key().ToString().length());
-        if (it->key().ToString().substr(0, len) == key.substr(0, len)){
+        if (it->key().ToString().substr(0, len) == key.substr(0, len)) {
             result.emplace(it->key().ToString());
         }
     }
@@ -81,14 +84,15 @@ std::unordered_set<mb::KeyType> mb::PersistentDB::findKey(const KeyType&& key) n
     return result;
 }
 
-std::unordered_set<mb::KeyType> mb::PersistentDB::findValue(const ValueType&& value) noexcept {
+std::unordered_set<mb::KeyType> mb::PersistentDB::findValue(const ValueType&& value) noexcept
+{
     std::shared_lock<std::shared_mutex> lock(mutex);
     std::unordered_set<mb::ValueType> result;
 
     leveldb::Iterator* it = db->NewIterator(read_options);
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
         size_t len = std::min(value.length(), it->value().ToString().length());
-        if (it->value().ToString().substr(0, len) == value.substr(0, len)){
+        if (it->value().ToString().substr(0, len) == value.substr(0, len)) {
             result.emplace(it->key().ToString());
         }
     }
@@ -96,4 +100,3 @@ std::unordered_set<mb::KeyType> mb::PersistentDB::findValue(const ValueType&& va
 
     return result;
 }
-

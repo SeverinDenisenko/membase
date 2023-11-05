@@ -1,8 +1,8 @@
 #pragma once
 
 #include "config.hpp"
-#include "handler.hpp"
 #include "db.hpp"
+#include "handler.hpp"
 
 namespace mb {
 class App {

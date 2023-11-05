@@ -2,11 +2,12 @@
 
 #include <fstream>
 
-#include <nlohmann/json.hpp>
 #include <fmt/format.h>
 #include <glog/logging.h>
+#include <nlohmann/json.hpp>
 
-mb::Config::Config(const std::string& file) noexcept{
+mb::Config::Config(const std::string& file) noexcept
+{
     try {
         nlohmann::json json;
         std::fstream stream(file);
@@ -20,7 +21,7 @@ mb::Config::Config(const std::string& file) noexcept{
         host = json["server"]["host"];
         port = json["server"]["port"];
         max_request_length = json["server"]["max_request_length"];
-        
+
         memory = json["cache"]["memory"];
 
         path = json["persistent"]["path"];
@@ -29,4 +30,3 @@ mb::Config::Config(const std::string& file) noexcept{
         LOG(FATAL) << fmt::format("Can't load config! Reason: {}", e.what());
     }
 }
-

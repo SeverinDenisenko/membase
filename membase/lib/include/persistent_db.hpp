@@ -2,8 +2,8 @@
 
 #include <shared_mutex>
 
-#include "db.hpp"
 #include "config.hpp"
+#include "db.hpp"
 
 #include <leveldb/db.h>
 

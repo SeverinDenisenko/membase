@@ -1,7 +1,7 @@
 #include "db_factory.hpp"
 
-#include <glog/logging.h>
 #include <fmt/format.h>
+#include <glog/logging.h>
 
 #include "memory_db.hpp"
 #include "persistent_db.hpp"
@@ -11,7 +11,8 @@ mb::DBFactory::DBFactory(Config& config) noexcept
 {
 }
 
-std::unique_ptr<mb::DB> mb::DBFactory::create() noexcept{
+std::unique_ptr<mb::DB> mb::DBFactory::create() noexcept
+{
     std::unique_ptr<mb::DB> result;
 
     if (config.mode == "memory") {
@@ -24,4 +25,3 @@ std::unique_ptr<mb::DB> mb::DBFactory::create() noexcept{
 
     return result;
 }
-
