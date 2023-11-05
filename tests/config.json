@@ -1,6 +1,0 @@
-{
-    "host": "127.0.0.1",
-    "port": 2222,
-    "max_request_length": 4098,
-    "memory": 536870912
-}

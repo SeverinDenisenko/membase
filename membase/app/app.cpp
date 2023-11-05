@@ -8,8 +8,8 @@
 #include <nlohmann/json.hpp>
 
 #include "config.hpp"
-#include "memory_db.hpp"
 #include "server.hpp"
+#include "db_factory.hpp"
 
 DEFINE_string(config, "config.json", "Main config");
 
@@ -21,7 +21,9 @@ mb::App::App(int argc, char* argv[]) noexcept
     google::LogToStderr();
 
     config = Config(FLAGS_config);
-    db = std::make_unique<MemoryDB>(config);
+    
+    DBFactory factory{config};
+    db = factory.create();
     handler = std::make_unique<Handler>(*db);
 
     LOG(INFO) << "Starting Membase...";

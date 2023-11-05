@@ -6,6 +6,8 @@ else()
     set(MEMBASE_LINK_OPTIONS)
 endif()
 
+set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} "-Bstatic")
+
 file(GLOB LIB_SRC lib/*)
 add_library(membase-lib STATIC ${LIB_SRC})
 set(MEMBASE_LIB_INCLUDE lib/include)

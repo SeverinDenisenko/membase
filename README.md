@@ -34,6 +34,12 @@ See section "Commands" for more.
 
 ## Features
 
+### Modes
+
+Database can operate in different modes:
+- memory: store data only in-memory
+- persistent: store data only on disk
+
 ## Plans
 
 ## Commands

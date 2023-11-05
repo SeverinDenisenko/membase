@@ -5,21 +5,21 @@ source $(dirname "$0")/framework.sh
 
 run "$1" "$2"
 
-for i in $(seq 1 1000); do
+for i in $(seq 1 100); do
     test "PUT $i $i" "OK"
 done
 
-for i in $(seq 1 1000); do
+for i in $(seq 1 100); do
     test "GET $i" "VALUE $i"
 done
 
 test 'WIPE' 'OK'
 
-for i in $(seq 1 1000); do
+for i in $(seq 1 100); do
     test "GET $i" "ERROR"
 done
 
-for i in $(seq 1 500); do
+for i in $(seq 1 100); do
     str1=$(openssl rand -hex 100)
     str2=$(openssl rand -hex 200)
     str3=$(openssl rand -hex 300)

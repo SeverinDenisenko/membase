@@ -15,10 +15,16 @@ mb::Config::Config(const std::string& file) noexcept{
         }
         stream >> json;
 
-        host = json["host"];
-        port = json["port"];
-        max_request_length = json["max_request_length"];
-        memory = json["memory"];
+        mode = json["mode"];
+
+        host = json["server"]["host"];
+        port = json["server"]["port"];
+        max_request_length = json["server"]["max_request_length"];
+        
+        memory = json["cache"]["memory"];
+
+        path = json["persistent"]["path"];
+        create_if_missing = json["persistent"]["create_if_missing"];
     } catch (const std::exception& e) {
         LOG(FATAL) << fmt::format("Can't load config! Reason: {}", e.what());
     }
