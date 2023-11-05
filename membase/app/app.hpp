@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "config.hpp"
 #include "db.hpp"
 #include "handler.hpp"
