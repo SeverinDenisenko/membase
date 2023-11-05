@@ -14,8 +14,6 @@
 DEFINE_string(config, "config.json", "Main config");
 
 mb::App::App(int argc, char* argv[]) noexcept
-    : db(std::make_unique<MemoryDB>())
-    , handler(*db)
 {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
     google::InstallFailureSignalHandler();
@@ -23,6 +21,8 @@ mb::App::App(int argc, char* argv[]) noexcept
     google::LogToStderr();
 
     config = Config(FLAGS_config);
+    db = std::make_unique<MemoryDB>(config);
+    handler = std::make_unique<Handler>(*db);
 
     LOG(INFO) << "Starting Membase...";
 }
@@ -35,7 +35,7 @@ mb::App::~App()
 void mb::App::Run() noexcept
 try {
     boost::asio::io_context io_context;
-    Server server(io_context, config, handler);
+    Server server(io_context, config, *handler);
     io_context.run();
 
     boost::thread(boost::bind(&boost::asio::io_service::run, &io_context)).detach();
@@ -43,5 +43,5 @@ try {
     boost::this_thread::sleep_for(boost::chrono::seconds(60));
     io_context.stop();
 } catch (const std::exception& e) {
-    LOG(FATAL) << fmt::format("Excepton: {}.", e.what());
+    LOG(ERROR) << fmt::format("Excepton: {}.", e.what());
 }

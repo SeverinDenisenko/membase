@@ -39,6 +39,21 @@ std::string mb::Handler::operator()(const std::string& request) noexcept
         } else if (command == "REMOVE" && key && !value && tokens == 2) {
             db.remove(std::move(*key));
             res = fmt::format("OK\n");
+        } else if (command == "WIPE" && !key && !value && tokens == 1) {
+            db.wipe();
+            res = fmt::format("OK\n");
+        } else if (command == "FINDKEY" && key && !value && tokens == 2) {
+            auto data = db.findKey(std::move(*key));
+            for (auto& a : data) {
+                res += fmt::format("KEY {}\n", a);
+            }
+            res += fmt::format("OK\n");
+        } else if (command == "FINDVALUE" && key && !value && tokens == 2) {
+            auto data = db.findValue(std::move(*key));
+            for (auto& a : data) {
+                res += fmt::format("KEY {}\n", a);
+            }
+            res += fmt::format("OK\n");
         } else {
             goto error;
         }

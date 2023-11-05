@@ -16,6 +16,6 @@ public:
 private:
     Config config;
     std::unique_ptr<DB> db;
-    Handler handler;
+    std::unique_ptr<Handler> handler;
 };
 }

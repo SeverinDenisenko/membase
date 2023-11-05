@@ -5,31 +5,21 @@ source $(dirname "$0")/framework.sh
 
 run "$1" "$2"
 
-test 'PUT' 'ERROR'
-test 'GET' 'ERROR'
-test 'PUT 69' 'ERROR'
-test 'Hello' 'ERROR'
-test 'PUT 69 96' 'OK'
-test 'GET 69' 'VALUE 96'
-test 'PUT name severin' 'OK'
-test 'GET name' 'VALUE severin'
-test 'REMOVE name' 'OK'
-test 'GET name' 'ERROR'
-test 'GET 69' 'VALUE 96'
-test 'PUT user:name:first severin' 'OK'
-test 'GET user:name:first' 'VALUE severin'
-test 'PUT basic:json {fist:"severin",work:"programmer",token:"!@#$%^&*()_+="}' 'OK'
-test 'GET basic:json' 'VALUE {fist:"severin",work:"programmer",token:"!@#$%^&*()_+="}'
-
-for i in $(seq 1000 1100); do
+for i in $(seq 1 1000); do
     test "PUT $i $i" "OK"
 done
 
-for i in $(seq 1000 1100); do
+for i in $(seq 1 1000); do
     test "GET $i" "VALUE $i"
 done
 
-for i in $(seq 1 100); do
+test 'WIPE' 'OK'
+
+for i in $(seq 1 1000); do
+    test "GET $i" "ERROR"
+done
+
+for i in $(seq 1 500); do
     str1=$(openssl rand -hex 100)
     str2=$(openssl rand -hex 200)
     str3=$(openssl rand -hex 300)
