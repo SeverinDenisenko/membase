@@ -1,5 +1,9 @@
 # Membase - key-value storage solution
 
+## Why this exists?
+
+The goal of this project is to provide simple, easy to modify and relatively fast key-value storage, written in modern C++. While alternatives like Memcached and Redis written in pure C, this project focuses on code readability and flexibility.
+
 ## How to use
 
 You can insert values using `PUT`:
@@ -42,13 +46,23 @@ Database can operate in different modes:
 
 ## Plans
 
+Current plans contains:
+- Creating more effitient data-strucrure for storing key-value strings for cache
+- Replasing current persistent storage with self-developed
+- Replasing current testing solution with faster and more flexible
+- Creating benchmarks
+- Creating flexible search functionality
+- Adding wrapper libraries for different programming languages (C, C++, Python, Rust, Go, are priorities for now)
+
 ## Commands
 
-- `GET [key]`
+- `GET [key]` 
 - `PUT [key] [value]`
-- `REMOVE [key]`
-- `WIPE`
-- `FINDKEY [search]`
-- `FINDVALUE [search]`
+- `REMOVE [key]` Removes key form storage
+- `WIPE` Completely erases database
+- `FINDKEY [search]` Returns list of keys that start with specific sequence
+- `FINDVALUE [search]` Returns list of keys, values of such starts with specific sequence
 
 ## Contributing
+
+All contributions that address issues or implement features are welcome. If you encountered bugs or have some ideas you welcome to create an issue on github.
