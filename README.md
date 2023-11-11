@@ -1,4 +1,4 @@
-# Membase - key-value storage solution
+# Membase – key-value storage solution
 
 ## Why this exists?
 
@@ -49,7 +49,6 @@ Database can operate in different modes:
 Current plans contains:
 - Creating more effitient data-strucrure for storing key-value strings for cache
 - Replasing current persistent storage with self-developed
-- Replasing current testing solution with faster and more flexible
 - Creating benchmarks
 - Creating flexible search functionality
 - Adding wrapper libraries for different programming languages (C, C++, Python, Rust, Go, are priorities for now)

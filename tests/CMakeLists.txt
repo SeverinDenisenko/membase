@@ -3,7 +3,7 @@ enable_testing()
 function(run_bash_test TEST_NAME SCRIPT_NAME CONFIG_NAME)
     add_test(
         NAME ${TEST_NAME}
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/${SCRIPT_NAME}.sh $<TARGET_FILE:membase> ${CMAKE_CURRENT_SOURCE_DIR}/${CONFIG_NAME}.json
+        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/${SCRIPT_NAME}.py $<TARGET_FILE:membase> ${CMAKE_CURRENT_SOURCE_DIR}/${CONFIG_NAME}.json
     )
 endfunction()
 
