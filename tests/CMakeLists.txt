@@ -19,7 +19,7 @@ run_test(FuzzingTestPersistent fuzzing persistent_config)
 run_test(FindTestPersistent find persistent_config)
 
 add_custom_target(tests
-    COMMAND ${CMAKE_CTEST_COMMAND}
+    COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
     DEPENDS membase
 )
 
