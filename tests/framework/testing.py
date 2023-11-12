@@ -24,10 +24,23 @@ class Membase:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self.ip, self.port))
         s.sendall(input.encode())
-        s.shutdown(socket.SHUT_WR)
         data = s.recv(4096)
         s.close()
         return data.decode()[:-1]
+
+    def test_seq(self, input: list, expected: str) -> None:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((self.ip, self.port))
+        for elem in input:
+            s.sendall(elem.encode())
+            response = s.recv(4096).decode()[:-1]
+            if response == expected:
+                print(f"OK: {response} == {expected}")
+            else:
+                print(f"FAIL: {response} != {expected}")
+                self.done()
+                exit(1)
+        s.close()
 
     def test(self, input: str, expected: str) -> None:
         print(f"RUNNING: {input}")
@@ -56,10 +69,11 @@ class Test:
             self.app = Membase(self.executable, self.config,
                                self.ip, self.port)
             self.app.prepare()
-            time.sleep(1)
+            time.sleep(2)
             self.tests()
             self.app.done()
-        except:
+        except Exception as e:
+            print(f"FAIL: {e}")
             self.app.done()
             exit(1)
 

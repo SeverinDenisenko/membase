@@ -6,7 +6,8 @@
         "max_request_length": 4098
     },
     "cache": {
-        "memory": 536870912
+        "buckets": 1048576,
+        "memory": 1073741824
     },
     "persistent": {
         "path": "/tmp/testdb",

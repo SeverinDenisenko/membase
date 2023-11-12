@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 namespace mb {
 class Status {
 public:
@@ -10,12 +8,12 @@ public:
     static Status Error() noexcept;
 
     operator bool() const;
-    std::string Message() const;
+    const char* Message() const;
 
 private:
-    explicit Status(std::string msg, bool ok) noexcept;
+    explicit Status(const char* msg, bool ok) noexcept;
 
-    std::string msg;
+    const char* msg;
     bool ok;
 };
 }

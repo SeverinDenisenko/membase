@@ -22,7 +22,7 @@ mb::PersistentDB::~PersistentDB()
     delete db;
 }
 
-std::optional<mb::ValueType> mb::PersistentDB::get(const mb::KeyType&& key) noexcept
+mb::Result<mb::ValueType> mb::PersistentDB::get(const mb::KeyType&& key) noexcept
 {
     std::shared_lock<std::shared_mutex> lock(mutex);
     std::string result;
@@ -30,29 +30,39 @@ std::optional<mb::ValueType> mb::PersistentDB::get(const mb::KeyType&& key) noex
     leveldb::Status s = db->Get(read_options, key, &result);
 
     if (!s.ok()) {
-        return std::nullopt;
+        return Result<ValueType>::Error();
     } else {
-        return result;
+        return Result<ValueType>::Ok(ValueType(result));
     }
 }
 
-void mb::PersistentDB::put(const KeyType&& key, const ValueType&& value) noexcept
+mb::Status mb::PersistentDB::put(const KeyType&& key, const ValueType&& value) noexcept
 {
     std::lock_guard<std::shared_mutex> lock(mutex);
 
     leveldb::Status s = db->Put(write_options, key, value);
 
-    // TODO error handling
+    if (s.ok()) {
+        return Status::Ok();
+    } else {
+        return Status::Error();
+    }
 }
 
-void mb::PersistentDB::remove(const KeyType&& key) noexcept
+mb::Status mb::PersistentDB::remove(const KeyType&& key) noexcept
 {
     std::lock_guard<std::shared_mutex> lock(mutex);
 
     leveldb::Status s = db->Delete(write_options, key);
+
+    if (s.ok()) {
+        return Status::Ok();
+    } else {
+        return Status::Error();
+    }
 }
 
-void mb::PersistentDB::wipe() noexcept
+mb::Status mb::PersistentDB::wipe() noexcept
 {
     std::lock_guard<std::shared_mutex> lock(mutex);
 
@@ -65,6 +75,12 @@ void mb::PersistentDB::wipe() noexcept
     delete it;
 
     leveldb::Status s = db->Write(write_options, &batch);
+
+    if (s.ok()) {
+        return Status::Ok();
+    } else {
+        return Status::Error();
+    }
 }
 
 std::unordered_set<mb::KeyType> mb::PersistentDB::findKey(const KeyType&& key) noexcept

@@ -22,6 +22,7 @@ mb::Config::Config(const std::string& file) noexcept
         port = json["server"]["port"];
         max_request_length = json["server"]["max_request_length"];
 
+        buckets = json["cache"]["buckets"];
         memory = json["cache"]["memory"];
 
         path = json["persistent"]["path"];

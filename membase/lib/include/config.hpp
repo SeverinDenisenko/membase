@@ -12,6 +12,7 @@ public:
     std::string host;
     int port;
     int max_request_length;
+    size_t buckets;
     size_t memory;
     std::string path;
     bool create_if_missing;

@@ -1,6 +1,6 @@
 #include "status.hpp"
 
-mb::Status::Status(std::string msg, bool ok) noexcept
+mb::Status::Status(const char* msg, bool ok) noexcept
     : msg(msg)
     , ok(ok)
 {
@@ -26,7 +26,7 @@ mb::Status::operator bool() const
     return ok;
 }
 
-std::string mb::Status::Message() const
+const char* mb::Status::Message() const
 {
     return msg;
 }

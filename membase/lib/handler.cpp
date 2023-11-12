@@ -20,11 +20,13 @@ std::string mb::Handler::operator()(const std::string& request) noexcept
 
     Status status = command.Verify();
     if (!status) {
+        LOG(WARNING) << "Invalid command.";
         return status.Message();
     }
 
     status = command.Run(db);
     if (!status) {
+        LOG(WARNING) << "Command exited with error.";
         return status.Message();
     }
 

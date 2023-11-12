@@ -51,21 +51,18 @@ mb::Status mb::Command::Run(DB& db) noexcept
 
     switch (action) {
     case Action::GET: {
-        std::optional<std::string> ans = db.get(std::move(*iter));
+        auto ans = db.get(std::move(*iter));
         if (!ans)
-            return Status::Error();
-        result = fmt::format("VALUE {}\n", *ans);
+            return ans;
+        result = fmt::format("VALUE {}\n", (std::string)ans);
         return Status::Fine();
     }
     case Action::PUT:
-        db.put(std::move(*iter++), std::move(*iter));
-        return Status::Ok();
+        return db.put(std::move(*iter++), std::move(*iter));
     case Action::REMOVE:
-        db.remove(std::move(*iter));
-        return Status::Ok();
+        return db.remove(std::move(*iter));
     case Action::WIPE:
-        db.wipe();
-        return Status::Ok();
+        return db.wipe();
     case Action::FINDKEY: {
         auto data = db.findKey(std::move(*iter));
         for (auto& a : data) {
@@ -85,7 +82,7 @@ mb::Status mb::Command::Run(DB& db) noexcept
     }
 }
 
-std::string& mb::Command::Result() noexcept {
+std::string& mb::Command::Result() noexcept
+{
     return result;
 }
-
