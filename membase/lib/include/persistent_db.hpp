@@ -18,8 +18,8 @@ public:
     Status put(const KeyType&& key, const ValueType&& value) noexcept override;
     Status remove(const KeyType&& key) noexcept override;
     Status wipe() noexcept override;
-    std::unordered_set<KeyType> findKey(const KeyType&& key) noexcept override;
-    std::unordered_set<KeyType> findValue(const ValueType&& value) noexcept override;
+    FindResult findKey(const KeyType&& key) noexcept override;
+    FindResult findValue(const ValueType&& value) noexcept override;
 
 private:
     std::shared_mutex mutex;

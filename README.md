@@ -55,12 +55,44 @@ Current plans contains:
 
 ## Commands
 
-- `GET [key]` 
-- `PUT [key] [value]`
+- `GET [key]` Returns the value if exists, error otherwise
+- `PUT [key] [value]` Insert pair, key and value can be any sequence of symbols (not control symbols or spaces)
 - `REMOVE [key]` Removes key form storage
 - `WIPE` Completely erases database
-- `FINDKEY [search]` Returns list of keys that start with specific sequence
-- `FINDVALUE [search]` Returns list of keys, values of such starts with specific sequence
+- `FINDKEY [search]` Returns list of keys that start with specific sequencee in lexical order
+- `FINDVALUE [search]` Returns list of keys, values of such starts with specific sequence in lexical order
+
+## Config
+
+You have to provide app with argument `-config config.json`. Example config:
+
+```json
+{
+    "mode": "persistent",
+    "server": {
+        "host": "127.0.0.1",
+        "port": 2222,
+        "max_request_length": 4098
+    },
+    "cache": {
+        "buckets": 1048576,
+        "memory": 1073741824
+    },
+    "persistent": {
+        "path": "/tmp/testdb",
+        "create_if_missing": true
+    }
+}
+```
+
+Where:
+
+- `mode` Can be `persistent` or `memory`
+- `max_request_length` Maximum possible summary length of command
+- `buckets` Default number of buckets in hash table (can grow in runtime)
+- `memory` Maximum available memory to the system. If memory is full, the majority of operations will result in errors
+- `path` Path to persistent storage
+- `create_if_missing` If `false` and database does not exist, result if failure
 
 ## Contributing
 

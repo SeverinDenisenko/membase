@@ -1,4 +1,5 @@
 #include "persistent_db.hpp"
+#include "comparator.hpp"
 #include "db.hpp"
 
 #include <fmt/format.h>
@@ -83,15 +84,15 @@ mb::Status mb::PersistentDB::wipe() noexcept
     }
 }
 
-std::unordered_set<mb::KeyType> mb::PersistentDB::findKey(const KeyType&& key) noexcept
+mb::FindResult mb::PersistentDB::findKey(const KeyType&& key) noexcept
 {
     std::shared_lock<std::shared_mutex> lock(mutex);
-    std::unordered_set<mb::KeyType> result;
+    FindResult result;
+    Comparator<std::string> comparator;
 
     leveldb::Iterator* it = db->NewIterator(read_options);
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
-        size_t len = std::min(key.length(), it->key().ToString().length());
-        if (it->key().ToString().substr(0, len) == key.substr(0, len)) {
+        if (comparator.comparePrefix(key, it->key().ToString())) {
             result.emplace(it->key().ToString());
         }
     }
@@ -100,15 +101,15 @@ std::unordered_set<mb::KeyType> mb::PersistentDB::findKey(const KeyType&& key) n
     return result;
 }
 
-std::unordered_set<mb::KeyType> mb::PersistentDB::findValue(const ValueType&& value) noexcept
+mb::FindResult mb::PersistentDB::findValue(const ValueType&& value) noexcept
 {
     std::shared_lock<std::shared_mutex> lock(mutex);
-    std::unordered_set<mb::ValueType> result;
+    FindResult result;
+    Comparator<std::string> comparator;
 
     leveldb::Iterator* it = db->NewIterator(read_options);
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
-        size_t len = std::min(value.length(), it->value().ToString().length());
-        if (it->value().ToString().substr(0, len) == value.substr(0, len)) {
+        if (comparator.comparePrefix(value, it->value().ToString())) {
             result.emplace(it->key().ToString());
         }
     }

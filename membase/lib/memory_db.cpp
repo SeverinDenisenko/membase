@@ -1,4 +1,5 @@
 #include "memory_db.hpp"
+#include "comparator.hpp"
 #include "db.hpp"
 
 mb::MemoryDB::MemoryDB(Config& config)
@@ -74,17 +75,16 @@ mb::Status mb::MemoryDB::wipe() noexcept
     return Status::Ok();
 }
 
-std::unordered_set<mb::KeyType> mb::MemoryDB::findKey(const KeyType&& key) noexcept
+mb::FindResult mb::MemoryDB::findKey(const KeyType&& key) noexcept
 {
     std::shared_lock<std::shared_mutex> lock(mutex);
-
-    std::unordered_set<mb::KeyType> result;
+    FindResult result;
+    Comparator<InternalValueType> comparator;
 
     auto key_internal = InternalKeyType(key);
 
     for (auto pair : map) {
-        size_t len = std::min(key.length(), pair.first.length());
-        if (pair.first.substr(0, len) == key_internal.substr(0, len)) {
+        if (comparator.comparePrefix(key_internal, pair.first)) {
             result.emplace(pair.first);
         }
     }
@@ -92,17 +92,16 @@ std::unordered_set<mb::KeyType> mb::MemoryDB::findKey(const KeyType&& key) noexc
     return result;
 }
 
-std::unordered_set<mb::KeyType> mb::MemoryDB::findValue(const ValueType&& value) noexcept
+mb::FindResult mb::MemoryDB::findValue(const ValueType&& value) noexcept
 {
     std::shared_lock<std::shared_mutex> lock(mutex);
-
-    std::unordered_set<mb::ValueType> result;
+    FindResult result;
+    Comparator<InternalValueType> comparator;
 
     auto value_internal = InternalValueType(value);
 
     for (auto pair : map) {
-        size_t len = std::min(value.length(), pair.second.length());
-        if (pair.second.substr(0, len) == value_internal.substr(0, len)) {
+        if (comparator.comparePrefix(value_internal, pair.second)) {
             result.emplace(pair.first);
         }
     }
