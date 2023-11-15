@@ -7,11 +7,11 @@
 #include <leveldb/write_batch.h>
 
 mb::PersistentDB::PersistentDB(Config& config)
-    : config(config)
+    : config_(config)
 {
-    options.create_if_missing = config.create_if_missing;
-    leveldb::Status s = leveldb::DB::Open(options, "/tmp/testdb", &db);
-    write_options.sync = true;
+    options_.create_if_missing = config_.create_if_missing;
+    leveldb::Status s = leveldb::DB::Open(options_, "/tmp/testdb", &db_);
+    write_options_.sync = true;
 
     if (!s.ok()) {
         LOG(FATAL) << fmt::format("Can't open Persistent DB. Reason: {}", s.ToString());
@@ -20,15 +20,15 @@ mb::PersistentDB::PersistentDB(Config& config)
 
 mb::PersistentDB::~PersistentDB()
 {
-    delete db;
+    delete db_;
 }
 
 mb::Result<mb::ValueType> mb::PersistentDB::get(const mb::KeyType&& key) noexcept
 {
-    std::shared_lock<std::shared_mutex> lock(mutex);
+    std::shared_lock<std::shared_mutex> lock(mutex_);
     std::string result;
 
-    leveldb::Status s = db->Get(read_options, key, &result);
+    leveldb::Status s = db_->Get(read_options_, key, &result);
 
     if (!s.ok()) {
         return Result<ValueType>::Error();
@@ -39,9 +39,9 @@ mb::Result<mb::ValueType> mb::PersistentDB::get(const mb::KeyType&& key) noexcep
 
 mb::Status mb::PersistentDB::put(const KeyType&& key, const ValueType&& value) noexcept
 {
-    std::lock_guard<std::shared_mutex> lock(mutex);
+    std::lock_guard<std::shared_mutex> lock(mutex_);
 
-    leveldb::Status s = db->Put(write_options, key, value);
+    leveldb::Status s = db_->Put(write_options_, key, value);
 
     if (s.ok()) {
         return Status::Ok();
@@ -52,9 +52,9 @@ mb::Status mb::PersistentDB::put(const KeyType&& key, const ValueType&& value) n
 
 mb::Status mb::PersistentDB::remove(const KeyType&& key) noexcept
 {
-    std::lock_guard<std::shared_mutex> lock(mutex);
+    std::lock_guard<std::shared_mutex> lock(mutex_);
 
-    leveldb::Status s = db->Delete(write_options, key);
+    leveldb::Status s = db_->Delete(write_options_, key);
 
     if (s.ok()) {
         return Status::Ok();
@@ -65,17 +65,17 @@ mb::Status mb::PersistentDB::remove(const KeyType&& key) noexcept
 
 mb::Status mb::PersistentDB::wipe() noexcept
 {
-    std::lock_guard<std::shared_mutex> lock(mutex);
+    std::lock_guard<std::shared_mutex> lock(mutex_);
 
     leveldb::WriteBatch batch;
 
-    leveldb::Iterator* it = db->NewIterator(read_options);
+    leveldb::Iterator* it = db_->NewIterator(read_options_);
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
         batch.Delete(it->key());
     }
     delete it;
 
-    leveldb::Status s = db->Write(write_options, &batch);
+    leveldb::Status s = db_->Write(write_options_, &batch);
 
     if (s.ok()) {
         return Status::Ok();
@@ -86,11 +86,11 @@ mb::Status mb::PersistentDB::wipe() noexcept
 
 mb::FindResult mb::PersistentDB::findKey(const KeyType&& key) noexcept
 {
-    std::shared_lock<std::shared_mutex> lock(mutex);
+    std::shared_lock<std::shared_mutex> lock(mutex_);
     FindResult result;
     Comparator<std::string> comparator;
 
-    leveldb::Iterator* it = db->NewIterator(read_options);
+    leveldb::Iterator* it = db_->NewIterator(read_options_);
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
         if (comparator.comparePrefix(key, it->key().ToString())) {
             result.emplace(it->key().ToString());
@@ -103,11 +103,11 @@ mb::FindResult mb::PersistentDB::findKey(const KeyType&& key) noexcept
 
 mb::FindResult mb::PersistentDB::findValue(const ValueType&& value) noexcept
 {
-    std::shared_lock<std::shared_mutex> lock(mutex);
+    std::shared_lock<std::shared_mutex> lock(mutex_);
     FindResult result;
     Comparator<std::string> comparator;
 
-    leveldb::Iterator* it = db->NewIterator(read_options);
+    leveldb::Iterator* it = db_->NewIterator(read_options_);
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
         if (comparator.comparePrefix(value, it->value().ToString())) {
             result.emplace(it->key().ToString());

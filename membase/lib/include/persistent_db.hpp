@@ -22,11 +22,11 @@ public:
     FindResult findValue(const ValueType&& value) noexcept override;
 
 private:
-    std::shared_mutex mutex;
-    Config& config;
-    leveldb::DB* db;
-    leveldb::Options options;
-    leveldb::WriteOptions write_options;
-    leveldb::ReadOptions read_options;
+    std::shared_mutex mutex_;
+    Config& config_;
+    leveldb::DB* db_;
+    leveldb::Options options_;
+    leveldb::WriteOptions write_options_;
+    leveldb::ReadOptions read_options_;
 };
 }

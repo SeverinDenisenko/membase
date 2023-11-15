@@ -23,8 +23,8 @@ public:
     FindResult findValue(const ValueType&& value) noexcept override;
 
 private:
-    std::shared_mutex mutex;
-    boost::unordered_flat_map<InternalKeyType, InternalValueType> map;
-    Config& config;
+    Config& config_;
+    std::shared_mutex mutex_;
+    boost::unordered_flat_map<InternalKeyType, InternalValueType> map_;
 };
 }
