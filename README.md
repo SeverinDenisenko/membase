@@ -44,12 +44,49 @@ Database can operate in different modes:
 - memory: store data only in-memory
 - persistent: store data only on disk
 
+### Performanse
+
+Stats for `memory` mode:
+
+```
+... <= 0.1 ms 0
+0.1 <= 0.2 ms 0
+0.2 <= 0.3 ms 0
+0.3 <= 0.4 ms 0
+0.4 <= 0.5 ms 0
+0.5 <= 0.6 ms 1803
+0.6 <= 0.7 ms 97549
+0.7 <= 0.8 ms 534
+0.8 <= 0.9 ms 56
+0.9 <= 1.0 ms 10
+1.0 <= 1.1 ms 8
+1.1 <= 1.2 ms 4
+1.2 <= 1.3 ms 0
+1.3 <= 1.4 ms 0
+1.4 <= 1.5 ms 2
+1.5 <= ... ms 34
+Samples:  100000
+Min latency:  0.568
+Max latency:  4.246
+Mean latency:  0.63423
+```
+
+Stats for `persistent` mode:
+
+```
+... <= 1.5 ms 0
+1.5 <= ... ms 5000
+Samples:  5000
+Min latency:  1.759
+Max latency:  18.097
+Mean latency:  5.5521426
+```
+
 ## Plans
 
 Current plans contains:
 - Creating more effitient data-strucrure for storing key-value strings for cache
 - Replasing current persistent storage with self-developed
-- Creating benchmarks
 - Creating flexible search functionality
 - Adding wrapper libraries for different programming languages (C, C++, Python, Rust, Go, are priorities for now)
 
@@ -88,11 +125,15 @@ You have to provide app with argument `-config config.json`. Example config:
 Where:
 
 - `mode` Can be `persistent` or `memory`
-- `max_request_length` Maximum possible summary length of command
-- `buckets` Default number of buckets in hash table (can grow in runtime)
-- `memory` Maximum available memory to the system. If memory is full, the majority of operations will result in errors
-- `path` Path to persistent storage
-- `create_if_missing` If `false` and database does not exist, result if failure
+- `server`
+- - `host` & `port` Accept connections from
+- - `max_request_length` Maximum possible summary length of command
+- `cache`
+- - `buckets` Default number of buckets in hash table (can grow in runtime)
+- - `memory` Maximum available memory to the system. If memory is full, the majority of operations will result in errors
+- `persistent`
+- - `path` Path to persistent storage
+- - `create_if_missing` If `false` and database does not exist, result if failure
 
 ## Contributing
 

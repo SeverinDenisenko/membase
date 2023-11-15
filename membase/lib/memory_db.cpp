@@ -41,6 +41,11 @@ mb::Status mb::MemoryDB::put(const KeyType&& key, const ValueType&& value) noexc
     auto key_internal = InternalKeyType(key);
     auto value_internal = InternalValueType(value);
 
+    if (!allocatorsMemory.IsEnoughFor(key.size() + value.size() + 2)) {
+        LOG(WARNING) << fmt::format("MemoryDB is full!");
+        return Status::Error();
+    }
+
     map_.emplace(key_internal, value_internal);
 
     return Status::Ok();
