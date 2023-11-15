@@ -46,41 +46,7 @@ Database can operate in different modes:
 
 ### Performanse
 
-Stats for `memory` mode:
-
-```
-... <= 0.1 ms 0
-0.1 <= 0.2 ms 0
-0.2 <= 0.3 ms 0
-0.3 <= 0.4 ms 0
-0.4 <= 0.5 ms 0
-0.5 <= 0.6 ms 1803
-0.6 <= 0.7 ms 97549
-0.7 <= 0.8 ms 534
-0.8 <= 0.9 ms 56
-0.9 <= 1.0 ms 10
-1.0 <= 1.1 ms 8
-1.1 <= 1.2 ms 4
-1.2 <= 1.3 ms 0
-1.3 <= 1.4 ms 0
-1.4 <= 1.5 ms 2
-1.5 <= ... ms 34
-Samples:  100000
-Min latency:  0.568
-Max latency:  4.246
-Mean latency:  0.63423
-```
-
-Stats for `persistent` mode:
-
-```
-... <= 1.5 ms 0
-1.5 <= ... ms 5000
-Samples:  5000
-Min latency:  1.759
-Max latency:  18.097
-Mean latency:  5.5521426
-```
+Latency for PUT & GET operations in most cases below 0.75 ms for memory mode. Extensive performanse metrics and tooling can be found in `perf` folder.
 
 ## Plans
 
