@@ -116,7 +116,7 @@ public:
     }
 
     template <typename OtherAllocator>
-    BasicString(BasicStringView<OtherAllocator>::Iterator begin, BasicStringView<OtherAllocator>::Iterator end) noexcept
+    BasicString(typename BasicStringView<OtherAllocator>::Iterator begin, typename BasicStringView<OtherAllocator>::Iterator end) noexcept
         : len_(end - begin)
         , data_(Allocator().allocate(len_))
     {
@@ -263,7 +263,7 @@ private:
 template <typename Allocator>
 class BasicStringView {
 public:
-    explicit BasicStringView(BasicString<Allocator>::Iterator begin, BasicString<Allocator>::Iterator end) noexcept
+    explicit BasicStringView(typename BasicString<Allocator>::Iterator begin, typename BasicString<Allocator>::Iterator end) noexcept
         : begin_(begin)
         , end_(end)
     {
@@ -294,12 +294,12 @@ public:
         return end_ - begin_;
     }
 
-    BasicString<Allocator>::Iterator Begin() noexcept
+    typename BasicString<Allocator>::Iterator Begin() noexcept
     {
         return begin_;
     }
 
-    BasicString<Allocator>::Iterator End() noexcept
+    typename BasicString<Allocator>::Iterator End() noexcept
     {
         return end_;
     }
@@ -320,8 +320,8 @@ public:
     }
 
 private:
-    BasicString<Allocator>::Iterator begin_ { nullptr };
-    BasicString<Allocator>::Iterator end_ { nullptr };
+    typename BasicString<Allocator>::Iterator begin_ { nullptr };
+    typename BasicString<Allocator>::Iterator end_ { nullptr };
 };
 
 using String = BasicString<std::allocator<std::byte>>;
