@@ -1,8 +1,7 @@
 #pragma once
 
-#include <type_traits>
-
 #include "defines.hpp"
+#include <cstddef>
 
 namespace mb {
 template <typename Object, typename Allocator>
@@ -11,7 +10,7 @@ public:
     explicit BasicVector(size_t size, size_t capacity) noexcept
         : size_(size)
         , capacity_(capacity)
-        , data_(Allocator().allocate(capacity_ * sizeof(Object)))
+        , data_(reinterpret_cast<Object*>(Allocator().allocate(capacity_ * sizeof(Object))))
     {
         Init(data_, data_ + size_);
     }
@@ -48,7 +47,7 @@ public:
     ~BasicVector()
     {
         Destruct(data_, data_ + size_);
-        Allocator().deallocate(data_, size_);
+        Allocator().deallocate(reinterpret_cast<std::byte*>(data_), capacity_ * sizeof(Object));
     }
 
     Object& operator[](size_t index) noexcept
@@ -110,9 +109,9 @@ private:
     void Grow() noexcept
     {
         size_t capacity = capacity_ * 2;
-        Object* data = Allocator().allocate(capacity * sizeof(Object));
+        Object* data = reinterpret_cast<Object*>(Allocator().allocate(capacity * sizeof(Object)));
         Move(data_, data, size_);
-        Allocator().deallocate(data_, size_);
+        Allocator().deallocate(reinterpret_cast<std::byte*>(data_), capacity_ * sizeof(Object));
         data_ = data;
         capacity_ = capacity;
     }
@@ -123,5 +122,5 @@ private:
 };
 
 template <typename Object>
-using Vector = BasicVector<Object, std::allocator<Object>>;
+using Vector = BasicVector<Object, std::allocator<std::byte>>;
 }
