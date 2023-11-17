@@ -1,6 +1,7 @@
 #include "memory_db.hpp"
 #include "comparator.hpp"
 #include "db.hpp"
+#include "string_helpers.hpp"
 
 mb::MemoryDB::MemoryDB(Config& config)
     : config_(config)
@@ -9,23 +10,23 @@ mb::MemoryDB::MemoryDB(Config& config)
     allocatorsMemory = AllocatorsMemory(config_.memory);
 }
 
-mb::Result<mb::ValueType> mb::MemoryDB::get(const mb::KeyType&& key) noexcept
+mb::ReturnValueResult mb::MemoryDB::get(const mb::KeyType&& key) noexcept
 {
     std::shared_lock<std::shared_mutex> lock(mutex_);
 
-    if (!allocatorsMemory.IsEnoughFor(key.size() + 1)) {
+    if (!allocatorsMemory.IsEnoughFor(key.Length())) {
         LOG(WARNING) << fmt::format("MemoryDB is full!");
-        return Result<ValueType>::Error();
+        return ReturnValueResult::Error();
     }
 
-    auto key_internal = InternalKeyType(key);
+    InternalKeyType key_internal { key };
 
     auto find = map_.find(key_internal);
 
     if (find == map_.end()) {
-        return Result<ValueType>::Error();
+        return ReturnValueResult::Error();
     } else {
-        return Result<ValueType>::Ok(ValueType(find->second));
+        return ReturnValueResult::Ok(find->second.Copy<Allocator>());
     }
 }
 
@@ -33,20 +34,15 @@ mb::Status mb::MemoryDB::put(const KeyType&& key, const ValueType&& value) noexc
 {
     std::lock_guard<std::shared_mutex> lock(mutex_);
 
-    if (!allocatorsMemory.IsEnoughFor(key.size() + value.size() + 2)) {
+    if (!allocatorsMemory.IsEnoughFor(key.Length() + value.Length())) {
         LOG(WARNING) << fmt::format("MemoryDB is full!");
         return Status::Error();
     }
 
-    auto key_internal = InternalKeyType(key);
-    auto value_internal = InternalValueType(value);
+    InternalKeyType key_internal { key };
+    InternalValueType value_internal { value };
 
-    if (!allocatorsMemory.IsEnoughFor(key.size() + value.size() + 2)) {
-        LOG(WARNING) << fmt::format("MemoryDB is full!");
-        return Status::Error();
-    }
-
-    map_.emplace(key_internal, value_internal);
+    map_.insert(std::pair<InternalKeyType, InternalValueType> { std::move(key_internal), std::move(value_internal) });
 
     return Status::Ok();
 }
@@ -55,12 +51,12 @@ mb::Status mb::MemoryDB::remove(const KeyType&& key) noexcept
 {
     std::lock_guard<std::shared_mutex> lock(mutex_);
 
-    if (!allocatorsMemory.IsEnoughFor(key.size() + 1)) {
+    if (!allocatorsMemory.IsEnoughFor(key.Length() + 1)) {
         LOG(WARNING) << fmt::format("MemoryDB is full!");
         return Status::Error();
     }
 
-    auto key_internal = InternalKeyType(key);
+    InternalKeyType key_internal { key };
 
     auto find = map_.find(key_internal);
 
@@ -84,13 +80,11 @@ mb::FindResult mb::MemoryDB::findKey(const KeyType&& key) noexcept
 {
     std::shared_lock<std::shared_mutex> lock(mutex_);
     FindResult result;
-    Comparator<InternalValueType> comparator;
+    InternalKeyType key_internal { key };
 
-    auto key_internal = InternalKeyType(key);
-
-    for (auto pair : map_) {
-        if (comparator.comparePrefix(key_internal, pair.first)) {
-            result.emplace(pair.first);
+    for (auto& pair : map_) {
+        if (comparePrefix(key_internal, pair.first)) {
+            result.insert(pair.first.Copy<Allocator>());
         }
     }
 
@@ -101,13 +95,12 @@ mb::FindResult mb::MemoryDB::findValue(const ValueType&& value) noexcept
 {
     std::shared_lock<std::shared_mutex> lock(mutex_);
     FindResult result;
-    Comparator<InternalValueType> comparator;
 
-    auto value_internal = InternalValueType(value);
+    InternalValueType value_internal { value };
 
-    for (auto pair : map_) {
-        if (comparator.comparePrefix(value_internal, pair.second)) {
-            result.emplace(pair.first);
+    for (auto& pair : map_) {
+        if (comparePrefix(value_internal, pair.second)) {
+            result.insert(pair.first.Copy<Allocator>());
         }
     }
 

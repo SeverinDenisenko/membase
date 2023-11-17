@@ -23,17 +23,17 @@ mb::PersistentDB::~PersistentDB()
     delete db_;
 }
 
-mb::Result<mb::ValueType> mb::PersistentDB::get(const mb::KeyType&& key) noexcept
+mb::ReturnValueResult mb::PersistentDB::get(const KeyType&& key) noexcept
 {
     std::shared_lock<std::shared_mutex> lock(mutex_);
     std::string result;
 
-    leveldb::Status s = db_->Get(read_options_, key, &result);
+    leveldb::Status s = db_->Get(read_options_, key.ToSlice(), &result);
 
     if (!s.ok()) {
-        return Result<ValueType>::Error();
+        return ReturnValueResult::Error();
     } else {
-        return Result<ValueType>::Ok(ValueType(result));
+        return ReturnValueResult::Ok(result);
     }
 }
 
@@ -41,7 +41,7 @@ mb::Status mb::PersistentDB::put(const KeyType&& key, const ValueType&& value) n
 {
     std::lock_guard<std::shared_mutex> lock(mutex_);
 
-    leveldb::Status s = db_->Put(write_options_, key, value);
+    leveldb::Status s = db_->Put(write_options_, key.ToSlice(), value.ToSlice());
 
     if (s.ok()) {
         return Status::Ok();
@@ -54,7 +54,7 @@ mb::Status mb::PersistentDB::remove(const KeyType&& key) noexcept
 {
     std::lock_guard<std::shared_mutex> lock(mutex_);
 
-    leveldb::Status s = db_->Delete(write_options_, key);
+    leveldb::Status s = db_->Delete(write_options_, key.ToSlice());
 
     if (s.ok()) {
         return Status::Ok();
@@ -88,11 +88,10 @@ mb::FindResult mb::PersistentDB::findKey(const KeyType&& key) noexcept
 {
     std::shared_lock<std::shared_mutex> lock(mutex_);
     FindResult result;
-    Comparator<std::string> comparator;
 
     leveldb::Iterator* it = db_->NewIterator(read_options_);
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
-        if (comparator.comparePrefix(key, it->key().ToString())) {
+        if (comparePrefix(key.ToSlice().ToString(), it->key().ToString())) {
             result.emplace(it->key().ToString());
         }
     }
@@ -105,11 +104,11 @@ mb::FindResult mb::PersistentDB::findValue(const ValueType&& value) noexcept
 {
     std::shared_lock<std::shared_mutex> lock(mutex_);
     FindResult result;
-    Comparator<std::string> comparator;
 
-    leveldb::Iterator* it = db_->NewIterator(read_options_);
+    leveldb::Iterator* it
+        = db_->NewIterator(read_options_);
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
-        if (comparator.comparePrefix(value, it->value().ToString())) {
+        if (comparePrefix(value.ToSlice().ToString(), it->value().ToString())) {
             result.emplace(it->key().ToString());
         }
     }

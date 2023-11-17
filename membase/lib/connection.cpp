@@ -23,9 +23,10 @@ boost::asio::ip::tcp::socket& mb::Connection::socket() noexcept
 }
 
 mb::Connection::Connection(boost::asio::io_context& io_context, const Config& config, Handler& handler) noexcept
-    : config(config)
+    : config_(config)
     , handler(handler)
-    , request_(config.max_request_length, '\0')
+    , request_(config_.max_request_length)
+    , response_()
     , socket_(io_context)
 {
     LOG(INFO) << "Connection created.";
@@ -38,10 +39,10 @@ mb::Connection::~Connection()
 
 void mb::Connection::request() noexcept
 try {
-    request_ = std::string(config.max_request_length, '\0');
+    request_.Reset();
 
     socket_.async_read_some(
-        boost::asio::buffer(request_, config.max_request_length),
+        boost::asio::buffer(request_.Data(), request_.Length()),
         boost::bind(&Connection::handle_request, shared_from_this(),
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));

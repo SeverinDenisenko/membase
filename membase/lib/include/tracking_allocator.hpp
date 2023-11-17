@@ -8,7 +8,7 @@
 
 namespace mb {
 template <class T>
-class Allocator;
+class TrackingAllocator;
 
 class AllocatorsMemory {
 public:
@@ -50,17 +50,17 @@ private:
 inline AllocatorsMemory allocatorsMemory(0);
 
 template <class T>
-class Allocator {
+class TrackingAllocator {
 public:
     typedef T value_type;
 
-    Allocator() = default;
+    TrackingAllocator() = default;
 
     template <class U>
-    constexpr Allocator(const Allocator<U>&) noexcept { }
+    constexpr TrackingAllocator(const TrackingAllocator<U>&) noexcept { }
 
     template <class U>
-    constexpr Allocator(const Allocator<U>&&) noexcept { }
+    constexpr TrackingAllocator(const TrackingAllocator<U>&&) noexcept { }
 
     [[nodiscard]] T* allocate(std::size_t n) noexcept
     {
@@ -91,9 +91,9 @@ public:
 };
 
 template <class T, class U>
-bool operator==(const Allocator<T>&, const Allocator<U>&) { return true; }
+bool operator==(const TrackingAllocator<T>&, const TrackingAllocator<U>&) { return true; }
 
 template <class T, class U>
-bool operator!=(const Allocator<T>&, const Allocator<U>&) { return false; }
+bool operator!=(const TrackingAllocator<T>&, const TrackingAllocator<U>&) { return false; }
 
 } // namespace mb

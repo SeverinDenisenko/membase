@@ -1,24 +1,32 @@
 #include "tokens.hpp"
+#include "defines.hpp"
+#include "string.hpp"
 
-mb::Tokens::Tokens(const std::string& str) noexcept
-    : _sep(" ")
-    , _tokenizer(str, _sep)
+mb::Tokens::Tokens(StringView str) noexcept
+    : str_(str)
 {
-    _begin = _tokenizer.begin();
-    _end = _tokenizer.end();
+    String::Iterator last = str_.Begin();
+
+    for (String::Iterator current = str_.Begin(); current < str_.End(); ++current) {
+        if (current == str_.End() - 1) {
+            tokens_.Emplace(last, str_.End());
+            break;
+        }
+
+        if (*current == sep_) {
+            tokens_.Emplace(last, current);
+            last = current;
+            ++last;
+        }
+    }
 }
 
-mb::Tokens::iterator_t mb::Tokens::begin() const noexcept
+size_t mb::Tokens::Length() const noexcept
 {
-    return _begin;
+    return tokens_.Length();
 }
 
-mb::Tokens::iterator_t mb::Tokens::end() const noexcept
+mb::StringView mb::Tokens::operator[](size_t index) noexcept
 {
-    return _end;
-}
-
-size_t mb::Tokens::size() const noexcept
-{
-    return std::distance(_begin, _end);
+    return tokens_[index];
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "status.hpp"
 
 namespace mb {
@@ -32,7 +34,7 @@ public:
         return status;
     }
 
-    operator T() const noexcept
+    T& Value() noexcept
     {
         return value;
     }
@@ -40,7 +42,7 @@ public:
 private:
     Result(T&& value, Status status) noexcept
         : status(std::move(status))
-        , value(value)
+        , value(std::move(value))
     {
     }
 

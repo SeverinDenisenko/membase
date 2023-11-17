@@ -1,19 +1,16 @@
 #pragma once
 
-#include <string>
-
 #include "db.hpp"
+#include "string.hpp"
 
 namespace mb {
 class Handler {
 public:
     explicit Handler(DB& db) noexcept;
 
-    std::string operator()(const std::string& requst) noexcept;
+    std::string operator()(const String& requst) noexcept;
 
 private:
     DB& db;
-
-    std::string truncate(const std::string& requst) noexcept;
 };
 }

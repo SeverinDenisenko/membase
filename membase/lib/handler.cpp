@@ -5,6 +5,7 @@
 #include <glog/logging.h>
 
 #include "command.hpp"
+#include "string_helpers.hpp"
 #include "tokens.hpp"
 
 mb::Handler::Handler(DB& db) noexcept
@@ -12,10 +13,9 @@ mb::Handler::Handler(DB& db) noexcept
 {
 }
 
-std::string mb::Handler::operator()(const std::string& request) noexcept
+std::string mb::Handler::operator()(const String& request) noexcept
 {
-    std::string truncated = truncate(request);
-    Tokens tokens(truncated);
+    Tokens tokens(Truncate(request));
     Command command(tokens);
 
     Status status = command.Verify();
@@ -31,22 +31,4 @@ std::string mb::Handler::operator()(const std::string& request) noexcept
     }
 
     return fmt::format("{}{}", command.Result(), status.Message());
-}
-
-std::string mb::Handler::truncate(const std::string& request) noexcept
-{
-    std::string res;
-
-    auto it = std::find_if(request.begin(), request.end(), [](const char c) {
-        return std::iscntrl(c);
-    });
-
-    if (it == request.end()) {
-        return res;
-    }
-
-    size_t len = std::distance(request.begin(), it);
-    res = request.substr(0, len);
-
-    return res;
 }

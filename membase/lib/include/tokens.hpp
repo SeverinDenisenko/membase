@@ -1,23 +1,20 @@
 #pragma once
 
-#include <boost/tokenizer.hpp>
+#include "defines.hpp"
+#include "string.hpp"
+#include "vector.hpp"
 
 namespace mb {
 class Tokens {
 public:
-    using tokenizer_t = boost::tokenizer<boost::char_separator<char>>;
-    using iterator_t = tokenizer_t::iterator;
+    explicit Tokens(StringView str) noexcept;
 
-    explicit Tokens(const std::string& str) noexcept;
+    size_t Length() const noexcept;
+    StringView operator[](size_t index) noexcept;
 
-    iterator_t begin() const noexcept;
-    iterator_t end() const noexcept;
-    size_t size() const noexcept;
-
-public:
-    boost::char_separator<char> _sep;
-    tokenizer_t _tokenizer;
-    iterator_t _begin;
-    iterator_t _end;
+private:
+    std::byte sep_ { ' ' };
+    StringView str_ {};
+    Vector<StringView> tokens_ { 0, 3 };
 };
 }

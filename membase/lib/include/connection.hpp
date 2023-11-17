@@ -7,6 +7,7 @@
 
 #include "config.hpp"
 #include "handler.hpp"
+#include "string.hpp"
 
 namespace mb {
 class Connection : public boost::enable_shared_from_this<Connection> {
@@ -28,9 +29,9 @@ private:
     void handle_request(const boost::system::error_code& error, size_t size) noexcept;
     void handle_response(const boost::system::error_code& error, size_t size) noexcept;
 
-    const Config& config;
+    const Config& config_;
     Handler& handler;
-    std::string request_ = std::string(1024, '\0');
+    String request_;
     std::string response_;
     boost::asio::ip::tcp::socket socket_;
 };

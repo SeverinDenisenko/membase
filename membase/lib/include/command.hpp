@@ -11,7 +11,7 @@ namespace mb {
 
 class Command {
 public:
-    explicit Command(Tokens tokens) noexcept;
+    explicit Command(Tokens& tokens) noexcept;
     Status Verify() noexcept;
     Status Run(DB& db) noexcept;
     std::string& Result() noexcept;
@@ -31,10 +31,10 @@ private:
     };
 
     Action action;
-    Tokens tokens;
+    Tokens& tokens;
     std::string result;
 
-    static std::unordered_map<Action, Requirement> commands;
-    static std::unordered_map<std::string, Action> actions;
+    static const std::unordered_map<Action, Requirement> commands;
+    static const std::unordered_map<std::string, Action> actions;
 };
 }

@@ -1,8 +1,11 @@
 #include "command.hpp"
+#include "string.hpp"
+#include "string_helpers.hpp"
 
 #include <fmt/format.h>
+#include <string>
 
-std::unordered_map<std::string, mb::Command::Action> mb::Command::actions = {
+const std::unordered_map<std::string, mb::Command::Action> mb::Command::actions = {
     { "GET", mb::Command::Action::GET },
     { "PUT", mb::Command::Action::PUT },
     { "REMOVE", mb::Command::Action::REMOVE },
@@ -11,7 +14,7 @@ std::unordered_map<std::string, mb::Command::Action> mb::Command::actions = {
     { "FINDVALUE", mb::Command::Action::FINDVALUE }
 };
 
-std::unordered_map<mb::Command::Action, mb::Command::Requirement> mb::Command::commands = {
+const std::unordered_map<mb::Command::Action, mb::Command::Requirement> mb::Command::commands = {
     { mb::Command::Action::GET, { 2 } },
     { mb::Command::Action::PUT, { 3 } },
     { mb::Command::Action::REMOVE, { 2 } },
@@ -20,24 +23,25 @@ std::unordered_map<mb::Command::Action, mb::Command::Requirement> mb::Command::c
     { mb::Command::Action::FINDVALUE, { 2 } }
 };
 
-mb::Command::Command(Tokens tokens) noexcept
+mb::Command::Command(Tokens& tokens) noexcept
     : tokens(tokens)
 {
 }
 
 mb::Status mb::Command::Verify() noexcept
 {
-    if (tokens.size() == 0) {
+    if (tokens.Length() == 0) {
         return Status::Error();
     }
 
-    if (!actions.contains(*tokens.begin())) {
+    auto cmd = tokens[0].ToStdString();
+
+    if (!actions.contains(cmd)) {
         return Status::Error();
     }
+    action = actions.at(cmd);
 
-    action = actions.at(*tokens.begin());
-
-    if (commands[action].tokens == tokens.size()) {
+    if (commands.at(action).tokens == tokens.Length()) {
         return Status::Ok();
     } else {
         return Status::Error();
@@ -46,34 +50,31 @@ mb::Status mb::Command::Verify() noexcept
 
 mb::Status mb::Command::Run(DB& db) noexcept
 {
-    auto iter = tokens.begin();
-    ++iter;
-
     switch (action) {
     case Action::GET: {
-        auto ans = db.get(std::move(*iter));
+        auto ans = db.get(tokens[1]);
         if (!ans)
             return ans;
-        result = fmt::format("VALUE {}\n", (std::string)ans);
+        result = fmt::format("VALUE {}\n", ans.Value().ToStdString());
         return Status::Fine();
     }
     case Action::PUT:
-        return db.put(std::move(*iter++), std::move(*iter));
+        return db.put(tokens[1], tokens[2]);
     case Action::REMOVE:
-        return db.remove(std::move(*iter));
+        return db.remove(tokens[1]);
     case Action::WIPE:
         return db.wipe();
     case Action::FINDKEY: {
-        auto data = db.findKey(std::move(*iter));
+        auto data = db.findKey(tokens[1]);
         for (auto& a : data) {
-            result += fmt::format("KEY {}\n", a);
+            result += fmt::format("KEY {}\n", a.ToStdString());
         }
         return Status::Ok();
     }
     case Action::FINDVALUE: {
-        auto data = db.findValue(std::move(*iter));
+        auto data = db.findValue(tokens[1]);
         for (auto& a : data) {
-            result += fmt::format("KEY {}\n", a);
+            result += fmt::format("KEY {}\n", a.ToStdString());
         }
         return Status::Ok();
     }

@@ -2,10 +2,11 @@
 
 #include <shared_mutex>
 
+#include <leveldb/db.h>
+#include <leveldb/slice.h>
+
 #include "config.hpp"
 #include "db.hpp"
-
-#include <leveldb/db.h>
 
 namespace mb {
 
@@ -14,7 +15,7 @@ public:
     PersistentDB(Config& config);
     ~PersistentDB() override;
 
-    Result<ValueType> get(const KeyType&& key) noexcept override;
+    ReturnValueResult get(const KeyType&& key) noexcept override;
     Status put(const KeyType&& key, const ValueType&& value) noexcept override;
     Status remove(const KeyType&& key) noexcept override;
     Status wipe() noexcept override;
