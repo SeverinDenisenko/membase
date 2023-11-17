@@ -1,0 +1,16 @@
+{
+    "mode": "memory",
+    "server": {
+        "host": "127.0.0.1",
+        "port": 2222,
+        "max_request_length": 4098
+    },
+    "cache": {
+        "buckets": 1048576,
+        "memory": 3221225472
+    },
+    "persistent": {
+        "path": "/tmp/testdb",
+        "create_if_missing": true
+    }
+}

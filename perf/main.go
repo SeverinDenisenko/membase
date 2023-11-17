@@ -18,10 +18,10 @@ func RandString() string {
 }
 
 func TestPUT(mb *membase.Membase) *hist.Hist {
-	var begin float32 = 0.5
-	var end float32 = 5.0
-	var step float32 = 0.25
-	var count int = 100000
+	var begin float32 = 0.01
+	var end float32 = 9.95
+	var step float32 = 0.05
+	var count int = 1000000
 	hist := hist.CreateHist(begin, end, step)
 
 	for i := 0; i < count; i++ {
@@ -36,10 +36,10 @@ func TestPUT(mb *membase.Membase) *hist.Hist {
 }
 
 func TestGET(mb *membase.Membase) *hist.Hist {
-	var begin float32 = 0.5
-	var end float32 = 5.0
-	var step float32 = 0.25
-	var count int = 100000
+	var begin float32 = 0.01
+	var end float32 = 9.95
+	var step float32 = 0.05
+	var count int = 1000000
 	hist := hist.CreateHist(begin, end, step)
 
 	for i := 0; i < count; i++ {
@@ -61,13 +61,19 @@ func TestGET(mb *membase.Membase) *hist.Hist {
 func main() {
 	mb := membase.Start("127.0.0.1:2222")
 
-	fmt.Println("Testing PUT...")
-	hist := TestPUT(mb)
-	hist.Print()
+	for i := 0; i < 10; i++ {
+		fmt.Println("Testing PUT...")
+		hist := TestPUT(mb)
+		hist.Print()
 
-	fmt.Println("Testing GET...")
-	hist = TestGET(mb)
-	hist.Print()
+		mb.SendCheck("WIPE")
+
+		fmt.Println("Testing GET...")
+		hist = TestGET(mb)
+		hist.Print()
+
+		mb.SendCheck("WIPE")
+	}
 
 	mb.End()
 }
