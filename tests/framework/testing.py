@@ -69,7 +69,7 @@ class Test:
             self.app = Membase(self.executable, self.config,
                                self.ip, self.port)
             self.app.prepare()
-            time.sleep(2)
+            time.sleep(3)
             self.tests()
             self.app.done()
         except Exception as e:
