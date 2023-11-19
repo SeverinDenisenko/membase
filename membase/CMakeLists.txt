@@ -1,8 +1,8 @@
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(MEMBASE_COMPILE_OPTIONS "-Wall" "-Wextra" "-Werror" "-fsanitize=address" "-Wno-unknown-warning-option" "-Wno-error=class-memaccess")
+    set(MEMBASE_COMPILE_OPTIONS "-Wall" "-Wextra" "-Werror" "-fsanitize=address" "-fno-rtti" "-Wno-unknown-warning-option" "-Wno-error=class-memaccess")
     set(MEMBASE_LINK_OPTIONS "-fsanitize=address")
 else()
-    set(MEMBASE_COMPILE_OPTIONS "-Wall" "-Wextra" "-Werror" "-Wno-unknown-warning-option" "-Wno-error=class-memaccess")
+    set(MEMBASE_COMPILE_OPTIONS "-Wall" "-Wextra" "-Werror" "-fno-rtti" "-Wno-unknown-warning-option" "-Wno-error=class-memaccess")
     set(MEMBASE_LINK_OPTIONS)
 endif()
 
